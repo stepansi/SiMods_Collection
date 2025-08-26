@@ -1,0 +1,7 @@
+I have refactored the GenericShovel Blueprint. It was developed in UE5, so for UE4, it will likely need to be manually copied.
+
+This refactor addresses a critical vulnerability that allowed players to inflict arbitrary damage to any deployable (see `ApplyHealth` event). This vulnerability has been actively exploited by cheaters to instantly destroy any construction anywhere on servers. The new GenericShovel completely eliminates this exploit - deployable trace and ApplyHealth occur exclusively on the server side, with the client only transmitting boolean values.
+
+Furthermore, animation bugs and the "digging without animation" issue have been fully resolved - in the old version, a player might fail to send an event, or immediately send `StopBuilding` right after `StartBuilding`, while locally they continued to digging. This resulted in other players seeing them simply standing still, while in reality, player were inflicting damage. Now, all Shovel State transmission occurs exclusively through a single event, guaranteeing that the owning client sends only the correct data.
+
+The `CanShovel()` C++ function, previously located in the `SQEquipableItem` class, is no longer necessary. A functionally identical Blueprint function now offers comparable performance to its C++ counterpart.
